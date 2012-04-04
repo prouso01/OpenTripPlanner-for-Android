@@ -27,6 +27,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.miscwidgets.widget.Panel;
 import org.opentripplanner.api.model.EncodedPolylineBean;
 import org.opentripplanner.api.model.Leg;
+import org.opentripplanner.api.model.WalkStep;
 import org.opentripplanner.api.ws.Request;
 import org.opentripplanner.api.ws.Response;
 import org.osmdroid.util.GeoPoint;
@@ -39,6 +40,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageButton;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import de.mastacode.http.Http;
 
@@ -131,16 +134,125 @@ public class TripRequest extends AsyncTask<Request, Integer, Long> {
 		return Color.WHITE;
 	}
 	
+	
+	
+	//function that removes underscores 
+		private String turnsStr(String str){
+			String temp="";
+			if(str.equalsIgnoreCase("HARD_LEFT"))
+				temp="HARD LEFT";
+			else if(str.equalsIgnoreCase("SLIGHTLY_LEFT	"))
+				temp="SLIGHTLY LEFT	";
+			else if(str.equalsIgnoreCase("SLIGHTLY_RIGHT"))
+				temp="SLIGHTLY RIGHT";
+			else if(str.equalsIgnoreCase("HARD_RIGHT"))
+				temp="HARD RIGHT";
+			else if(str.equalsIgnoreCase("CIRCLE_CLOCKWISE"))
+				temp="CIRCLE CLOCKWISE";
+			else if(str.equalsIgnoreCase("CIRCLE_CLOCKWISE"))
+				temp="CIRCLE CLOCKWISE";
+			else if(str.equalsIgnoreCase("CIRCLE_COUNTERCLOCKWISE"))
+				temp="CIRCLE COUNTERCLOCKWISE";
+			else
+				temp=str;
+			return temp;
+		}
+	
 	private void showDirectionText(List<Leg> legs){
 		directionPanel = activity.directionPanel;
-		TextView tv = (TextView) directionPanel.getContent();
-		String directionText = "";
+		TextView txtView=activity.txtDirections;
+		
+		
+		String directionText = "Directions \n\n";
+		String relativeStr="";
+		int k=1;
+		int flagRelative=0;
 		
 		for(Leg leg: legs){
-			directionText+=leg.mode+"\n";
-		}
+			//zero variables for next iteration
+			flagRelative=0;
+			//TODO Might be better to compact some ifs (many ifs have exactly the same code in them)
+			
+			//if mode is WALK
+			if(leg.mode.toString().equalsIgnoreCase("WALK")){
+				
+				for(WalkStep wStep: leg.walkSteps ){
+					if (wStep.relativeDirection!=null){
+						flagRelative=1;
+						 if(!wStep.relativeDirection.toString().equalsIgnoreCase("CONTINUE")){
+							 relativeStr=turnsStr(wStep.relativeDirection.toString());
+							 directionText+= (k++) +". Turn " + relativeStr +" ";
+						 }
+						 else{
+							 directionText+=(k++)+wStep.relativeDirection.toString()+" ";
+						 }					 
+					}
+									
+					if(wStep.absoluteDirection!=null && flagRelative==0){
+						 
+					     directionText+= (k++) + ". Walk "+wStep.absoluteDirection.toString()+ " "  ;
+					    
+					}
+					
+					directionText+="to " + wStep.streetName.toString() + " " + "\n"; 
+				}	
+			}
+			//if mode is BICYCLE
+			if(leg.mode.toString().equalsIgnoreCase("BICYCLE")){
+				for(WalkStep wStep: leg.walkSteps ){
+					if (wStep.relativeDirection!=null){
+						flagRelative=1;
+						 if(!wStep.relativeDirection.toString().equalsIgnoreCase("CONTINUE")){
+							 relativeStr=turnsStr(wStep.relativeDirection.toString());
+							 directionText+= (k++) +". Turn " + relativeStr +" ";
+						 }
+						 else
+							 directionText+=(k++)+wStep.relativeDirection.toString()+" ";
+					}
+									
+					if(wStep.absoluteDirection!=null && flagRelative==0){
+					     directionText+= (k++) +". Bike "+wStep.absoluteDirection.toString()+ " "  ;   
+					}
+					directionText+="to " + wStep.streetName.toString() + " " + "\n"; 
+				}
+			}
+			
+			//if mode is BUS
+			//need to add the departure time
+			if(leg.mode.toString().equalsIgnoreCase("BUS")){
+			
+				directionText+= (k++) +". Take "+ leg.mode.toString() + " " + leg.route + " to "+leg.headsign + ".\nDrop off at "+ leg.to.name.toString() + "\n";
+	
+			}
+			
+			if(leg.mode.toString().equalsIgnoreCase("TRAIN") ||
+			   leg.mode.toString().equalsIgnoreCase("TRAM") ||
+			   leg.mode.toString().equalsIgnoreCase("Car") ||
+			   leg.mode.toString().equalsIgnoreCase("SUBWAY") ||
+			   leg.mode.toString().equalsIgnoreCase("RAIL") ||		
+			   leg.mode.toString().equalsIgnoreCase("FERRY") ||
+			   leg.mode.toString().equalsIgnoreCase("CABLE_CAR") ||
+			   leg.mode.toString().equalsIgnoreCase("GONDOLA") ||
+			   leg.mode.toString().equalsIgnoreCase("FUNICULAR") ||
+			   leg.mode.toString().equalsIgnoreCase("TRANSIT")	 ||
+			   leg.mode.toString().equalsIgnoreCase("TRAINISH") ||
+			   leg.mode.toString().equalsIgnoreCase("BUSISH")	||
+			   leg.mode.toString().equalsIgnoreCase("BOARDING") ||
+			   leg.mode.toString().equalsIgnoreCase("ALIGHTING") ||
+			   leg.mode.toString().equalsIgnoreCase("TRANSFER") ||
+			   leg.mode.toString().equalsIgnoreCase("STL") ){
+			
+					directionText+=(k++) +". Take "+ leg.mode.toString() + " " + leg.route + " to "+leg.headsign + ".\nDrop off at "+ leg.to.name.toString() + "\n";
+
+			}
+			
+
+		}	
 		
-		tv.setText(directionText);
+		Log.d(TAG, "DIRECTIONS   " + directionText);
+		txtView.setText(directionText);
+		
+		
 	}
 	
 	private Response requestPlan(Request requestParams) {
