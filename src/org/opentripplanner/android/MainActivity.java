@@ -106,6 +106,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 	private Spinner ddlGeocoder;
 
 	private Panel tripPanel;
+	TextView txtDirections;
 	Panel directionPanel;
 
 	MapOverlay startMarker;
@@ -149,7 +150,7 @@ public class MainActivity extends Activity implements OnSharedPreferenceChangeLi
 		directionPanel = (Panel) findViewById(R.id.rightPanel3);
 		ddlOptimization = (Spinner) findViewById(R.id.spinOptimization);
 		ddlTravelMode = (Spinner) findViewById(R.id.spinTravelMode);
-
+		txtDirections=(TextView) findViewById(R.id.txtViewInstructions);
 		tripPanel.setOpen(true, true);
 
 		ArrayAdapter optimizationAdapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, new OptimizeSpinnerItem[] {
