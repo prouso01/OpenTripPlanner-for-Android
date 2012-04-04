@@ -153,37 +153,49 @@
     </org.miscwidgets.widget.Panel>
 
     <org.miscwidgets.widget.Panel
-        android:id="@+id/rightPanel3"
+    android:id="@+id/rightPanel3"
+    android:layout_width="wrap_content"
+    android:layout_height="fill_parent"
+    android:layout_gravity="right"
+    panel:animationDuration="500"
+    panel:closedHandle="@android:drawable/ic_menu_directions"
+    panel:content="@+id/panelContent"
+    panel:handle="@+id/panelHandle"
+    panel:linearFlying="true"
+    panel:openedHandle="@android:drawable/ic_menu_directions"
+    panel:position="right"
+    panel:weight="75%p" >
+
+    <Button
+        android:id="@+id/panelHandle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginBottom="20dip" />
+
+    <ScrollView
+        android:id="@+id/panelContent"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:layout_gravity="right"
-        panel:animationDuration="500"
-        panel:closedHandle="@android:drawable/ic_menu_directions"
-        panel:content="@+id/panelContent"
-        panel:handle="@+id/panelHandle"
-        panel:linearFlying="true"
-        panel:openedHandle="@android:drawable/ic_menu_directions"
-        panel:position="right"
-        panel:weight="75%p" >
-
-        <Button
-            android:id="@+id/panelHandle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:layout_marginBottom="20dip" />
-
-        <TextView
-            android:id="@+id/panelContent"
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:background="#000000"
-            android:gravity="center"
-            android:padding="4dip"
-            android:text="Directions will go here!"
-            android:textColor="#eee"
-            android:textSize="16dip"
-            android:textStyle="bold" />
-    </org.miscwidgets.widget.Panel>
-
+        android:scrollbars="vertical"
+        android:background="#000000"
+        android:fillViewport="true" >
+   <TextView
+        		android:id="@+id/txtViewInstructions"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:background="#000000"
+                android:gravity="left"
+                android:padding="4dip"
+                android:text="Directions           :"
+                android:textColor="#eee"
+                android:textSize="16dip"
+                android:textStyle="bold" />
+   </ScrollView>
+</org.miscwidgets.widget.Panel>
+    
+    
+    
+    
+    
 </FrameLayout>
